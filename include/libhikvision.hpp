@@ -10,7 +10,7 @@ namespace AlertWatchdog {
 		USERNAME,
 		PASSWORD
 	};
-	constexpr auto PREDEFINED_CONFIGURE_KEYS = { "host", "port", "username", "password" };
+	constexpr char * PREDEFINED_CONFIGURE_KEYS[] = { "host", "port", "username", "password" };
 	using std::string;
 
 	typedef char* PCHAR;
@@ -42,39 +42,37 @@ namespace AlertWatchdog {
 		long user_id;
 		bool is_connect;
 	public:
-		/*class ClassConnectInfo {
-		private:
-			PCHAR loc, user, password;
-			unsigned short port;
-			LPNET_DVR_USER_LOGIN_INFO login_info;
-			void PasteParams(const string&, const unsigned short&, const string&, const string&);
-		public:
-			ClassConnectInfo(const string&, const unsigned short&, const string&, const string&);
-			ClassConnectInfo(const ConnectInfo&);
-			ClassConnectInfo(const ConnectInfo*);
-			~ClassConnectInfo();
-			PCHAR GetLocation();
-			PCHAR GetUser();
-			PCHAR GetPassword();
-			unsigned short GetPort();
-		};*/
-
 		ConnectInfo(const string& hostname, const unsigned short& port, const string& username, const string& password);
-		//ConnectInfo(ConnectInfo&);
 		void Login();
 		void Logout();
 		void InitializeUserInfo();
 		bool IsConnected() const;
+		long GetUserId() const;
+	};
+
+	class ArmInfo {
+		LONG lHandle;
+		NET_DVR_SETUPALARM_PARAM struAlarmParam = { 0 };
+		bool is_setup;
+	public:
+		ArmInfo();
+		void SetupAlarmChan(LONG userId); // ref: NET_DVR_SetupAlarmChan_V41
+		bool CloseAlarmChan();
+		bool GetStatus() const;
 	};
 
 	class HikvisionClient {
 	private:
 		ConnectInfo info;
 		static bool is_init;
+		ArmInfo arminfo;
 	public:
 		HikvisionClient(const ConnectInfo& c);
 		void Initialize();
 		//void Login();
+		void SetCallbackFunction(MSGCallBack);
+		void SetupAlarmChan();
+		void CloseAlarmChan();
 		void Cleanup();
 		bool Initialized() const;
 	};

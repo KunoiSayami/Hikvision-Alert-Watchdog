@@ -27,57 +27,15 @@ namespace AlertWatchdog {
 		this->user_info.bUseAsynLogin = false;
 	}
 
-	//ConnectInfo::ConnectInfo(ConnectInfo& c)
-
-/*	ConnectInfo::ClassConnectInfo::ClassConnectInfo(const ConnectInfo& c) {
-		this->PasteParams(c.url, c.port, c.username, c.password);
-	}
-
-	void ConnectInfo::ClassConnectInfo::PasteParams(const string& loc, const unsigned short& p, const string& user, const string& pwd) {
-		this->loc = new (std::nothrow) char[100], this->user = new (std::nothrow) char[100], this->password = new (std::nothrow) char[100];
-		if (loc.length() > 100 || user.length() > 100 || pwd.length() > 100)
-			throw OutOfLengthError();
-		strcpy(this->loc, loc.c_str());
-		strcpy(this->user, user.c_str());
-		strcpy(this->password, pwd.c_str());
-
-		this->port = p;
-	}
-
-	ConnectInfo::ClassConnectInfo::ClassConnectInfo(const ConnectInfo* c) : ClassConnectInfo::ClassConnectInfo(*c) {}
-
-	ConnectInfo::ClassConnectInfo::ClassConnectInfo(const string& loc, const unsigned short& p, const string& user, const string& pwd) {
-		this->PasteParams(loc, p, user, pwd);
-	}
-
-	ConnectInfo::ClassConnectInfo::~ClassConnectInfo() {
-		delete[] this->loc, delete[] this->user, delete[] this->password;
-	}
-
-	PCHAR ConnectInfo::ClassConnectInfo::GetLocation() {
-		return this->loc;
-	}
-
-	PCHAR ConnectInfo::ClassConnectInfo::GetUser() {
-		return this->user;
-	}
-
-	PCHAR ConnectInfo::ClassConnectInfo::GetPassword() {
-		return this->password;
-	}
-
-	unsigned short ConnectInfo::ClassConnectInfo::GetPort() {
-		return this->port;
-	}
-	*/
-
 	bool ConnectInfo::IsConnected() const {
 		return this->is_connect;
 	}
 
 	bool HikvisionClient::is_init = false;
 
-	HikvisionClient::HikvisionClient(const ConnectInfo& c) : info(c) {}
+	HikvisionClient::HikvisionClient(const ConnectInfo& c) : info(c) {
+		this->arminfo = ArmInfo();
+	}
 
 	void HikvisionClient::Initialize() {
 		if (!is_init) {
@@ -109,12 +67,13 @@ namespace AlertWatchdog {
 		return is_init;
 	}
 
+	void HikvisionClient::SetCallbackFunction(MSGCallBack callback) {
+		NET_DVR_SetDVRMessageCallBack_V30(callback, nullptr);
+	}
 
 	void ConnectInfo::Login() {
-		//ClassConnectInfo obj = ClassConnectInfo(this);
-		//NET_DVR_Login_V30(obj.GetLocation(), obj.GetPort(), obj.GetUser(), obj.GetPassword(), &this->device_info);
 		this->user_id = NET_DVR_Login_V40(&this->user_info, &this->device_info);
-		if (this->user_id == -1)
+		if (this->user_id < 0)
 			throw OtherLoginException();
 		this->is_connect = true;
 	}
@@ -124,5 +83,44 @@ namespace AlertWatchdog {
 			throw NotLoginException();
 		NET_DVR_Logout(this->user_id);
 		this->is_connect = false;
+	}
+
+	long ConnectInfo::GetUserId() const {
+		return this->user_id;
+	}
+
+	void HikvisionClient::SetupAlarmChan() {
+		this->arminfo.SetupAlarmChan(this->info.GetUserId());
+	}
+
+	void HikvisionClient::CloseAlarmChan() {
+		this->arminfo.CloseAlarmChan();
+	}
+
+	ArmInfo::ArmInfo() {
+		this->struAlarmParam.dwSize = sizeof(struAlarmParam);
+		this->struAlarmParam.byAlarmInfoType = 0;
+	}
+
+	void ArmInfo::SetupAlarmChan(LONG userId) {
+		if ((this->lHandle = NET_DVR_SetupAlarmChan_V41(userId, &this->struAlarmParam)) < 0) {
+			// TODO: Setup alarm chan failure
+			return;
+		};
+		this->is_setup = true;
+		//return this->lHandle;
+	}
+
+	bool ArmInfo::CloseAlarmChan() {
+		if (!NET_DVR_CloseAlarmChan_V30(this->lHandle)) {
+			// TODO: Close alarm chan failure
+			return false;
+		}
+		this->is_setup = false;
+		return true;
+	}
+
+	bool ArmInfo::GetStatus() const {
+		return this->is_setup;
 	}
 }
