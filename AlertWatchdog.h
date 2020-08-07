@@ -1,11 +1,9 @@
-﻿// AlertWatchdog.h: 标准系统包含文件的包含文件
-// 或项目特定的包含文件。
-
-#pragma once
+﻿#pragma once
 
 #include <iostream>
+#include "HCNetSDK.h"
 
-
-#ifdef _WIN32
-
+#ifdef MAX_CHANNUM
+#undef MAX_CHANNUM
+constexpr auto MAX_CHANNUM = 8;
 #endif

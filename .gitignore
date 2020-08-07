@@ -376,3 +376,6 @@ _deps
 
 out/
 lib/
+*.vcxproj*
+*.sln
+*.dir/

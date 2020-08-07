@@ -1,5 +1,17 @@
 # Hikvision Alert Watchdog
 
+## Build
+
+* Download [Hikvision SDK](https://open.hikvision.com/download/5cda567cf47ae80dd41a54b3)
+* Also, we need [curl](https://curl.haxx.se/download.html) **static** library
+* Put library file to `lib/`
+* Build with cmake
+
+```bash
+cmake .
+cmake --build .
+```
+
 ## LICENSE
 
 [![](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.txt)
