@@ -56,10 +56,12 @@ int main() {
 #endif
 	AlertWatchdog::HikvisionClient hikvisionClient(ParseConfigureJson());
 	hikvisionClient.Initialize();
+	hikvisionClient.Login();
 	hikvisionClient.SetCallbackFunction(MessageCallback);
 	hikvisionClient.SetupAlarmChan();
 #ifndef NDEBUG
-	std::cout << "Press enter to exit client\n";
+	std::cout << "Press enter to exit client";
+	std::cout.flush();
 #endif
 	std::cin.clear();
 	std::cin.get();
@@ -67,6 +69,7 @@ int main() {
 	std::cout << "Cleanup hikvision client\n";
 #endif
 	hikvisionClient.CloseAlarmChan();
+	hikvisionClient.Logout();
 	hikvisionClient.Cleanup();
 	return 0;
 }

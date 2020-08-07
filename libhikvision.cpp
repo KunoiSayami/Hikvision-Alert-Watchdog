@@ -1,11 +1,13 @@
 #include <libhikvision.hpp>
 #include <string.h>
+#include <iostream>
 
 namespace AlertWatchdog {
 	ConnectInfo::ConnectInfo(const string& loc, const unsigned short& p, const string& user, const string& pwd) :
 		url(loc), port(p), username(user), password(pwd), is_connect(false), user_id(0) {
 		this->device_info = {};
 		this->user_info = {};
+		this->InitializeUserInfo();
 	}
 
 	void ConnectInfo::InitializeUserInfo() {
@@ -63,6 +65,13 @@ namespace AlertWatchdog {
 		}
 	}
 
+	void HikvisionClient::Login() {
+		this->info.Login();
+	}
+
+	void HikvisionClient::Logout() {
+		this->info.Logout();
+	}
 	bool HikvisionClient::Initialized() const {
 		return is_init;
 	}
@@ -74,7 +83,11 @@ namespace AlertWatchdog {
 	void ConnectInfo::Login() {
 		this->user_id = NET_DVR_Login_V40(&this->user_info, &this->device_info);
 		if (this->user_id < 0)
+#ifndef NDEBUG
+			std::cerr << "Login failure (" << NET_DVR_GetLastError() << ")\n";;
+#else
 			throw OtherLoginException();
+#endif
 		this->is_connect = true;
 	}
 
@@ -104,7 +117,11 @@ namespace AlertWatchdog {
 
 	void ArmInfo::SetupAlarmChan(LONG userId) {
 		if ((this->lHandle = NET_DVR_SetupAlarmChan_V41(userId, &this->struAlarmParam)) < 0) {
+#ifndef NDEBUG
+			std::cerr << "Setup alarm chan failure (" << NET_DVR_GetLastError() << ")\n";;
+#else
 			// TODO: Setup alarm chan failure
+#endif
 			return;
 		};
 		this->is_setup = true;
@@ -113,7 +130,11 @@ namespace AlertWatchdog {
 
 	bool ArmInfo::CloseAlarmChan() {
 		if (!NET_DVR_CloseAlarmChan_V30(this->lHandle)) {
+#ifndef NDEBUG
+			std::cerr << "Close alarm chan failure (" << NET_DVR_GetLastError() << ")\n";
+#else
 			// TODO: Close alarm chan failure
+#endif
 			return false;
 		}
 		this->is_setup = false;

@@ -69,7 +69,8 @@ namespace AlertWatchdog {
 	public:
 		HikvisionClient(const ConnectInfo& c);
 		void Initialize();
-		//void Login();
+		void Login();
+		void Logout();
 		void SetCallbackFunction(MSGCallBack);
 		void SetupAlarmChan();
 		void CloseAlarmChan();
