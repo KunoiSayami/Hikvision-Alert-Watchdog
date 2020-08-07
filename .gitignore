@@ -379,3 +379,4 @@ lib/
 *.vcxproj*
 *.sln
 *.dir/
+config.json

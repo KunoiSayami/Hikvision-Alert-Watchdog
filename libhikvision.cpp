@@ -83,6 +83,7 @@ namespace AlertWatchdog {
 		if (!is_init) {
 			if (!NET_DVR_Init())
 				throw OtherInitializeException();
+			NET_DVR_SetReconnect(10000, true);
 			is_init = true;
 		}
 		else {

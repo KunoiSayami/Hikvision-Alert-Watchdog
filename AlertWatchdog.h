@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include <iostream>
-#include "HCNetSDK.h"
+#include <libhikvision.hpp>
 
 #ifdef MAX_CHANNUM
 #undef MAX_CHANNUM

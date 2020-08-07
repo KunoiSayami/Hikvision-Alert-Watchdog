@@ -1,5 +1,7 @@
 ﻿#include "AlertWatchdog.h"
-using namespace std;
+#include <fstream>
+#include <sstream>
+#include <nlohmann/json.hpp>
 
 void MeessageCallback(LONG lCommand, NET_DVR_ALARMER* pAlarmer, char* pAlarmInfo, DWORD dwBufLen, void* puser) {
 	NET_DVR_ALARMINFO struAlarmInfo;
@@ -22,7 +24,26 @@ void MeessageCallback(LONG lCommand, NET_DVR_ALARMER* pAlarmer, char* pAlarmInfo
 	}
 }
 
-int main()
-{
+AlertWatchdog::ConnectInfo ParseConfigureJson() {
+	using AlertWatchdog::PREDEFINED_CONFIGURE_KEYS;
+	using AlertWatchdog::KEY_LOCATE;
+	std::ifstream fin("config.json");
+	if (!fin.is_open()) {
+		// TODO: File can't open
+	}
+	nlohmann::json config;
+	fin >> config;
+	for (auto key: PREDEFINED_CONFIGURE_KEYS)
+		if (!config.contains(key)) {
+			// TODO: Key not found
+		}
+	return AlertWatchdog::ConnectInfo(config[PREDEFINED_CONFIGURE_KEYS[KEY_LOCATE::HOST]],
+		config[PREDEFINED_CONFIGURE_KEYS[KEY_LOCATE::PORT]],
+		config[PREDEFINED_CONFIGURE_KEYS[KEY_LOCATE::USERNAME]],
+		config[PREDEFINED_CONFIGURE_KEYS[KEY_LOCATE::PASSWORD]]);
+}
+
+int main() {
+	AlertWatchdog::HikvisionClient hikvisionClient(ParseConfigureJson());
 	return 0;
 }

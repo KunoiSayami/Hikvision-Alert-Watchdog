@@ -4,6 +4,13 @@
 #include <HCNetSDK.h>
 
 namespace AlertWatchdog {
+	enum KEY_LOCATE {
+		HOST = 0,
+		PORT,
+		USERNAME,
+		PASSWORD
+	};
+	constexpr auto PREDEFINED_CONFIGURE_KEYS = { "host", "port", "username", "password" };
 	using std::string;
 
 	typedef char* PCHAR;
@@ -52,7 +59,7 @@ namespace AlertWatchdog {
 			unsigned short GetPort();
 		};*/
 
-		ConnectInfo(const string&, const unsigned short&, const string&, const string&);
+		ConnectInfo(const string& hostname, const unsigned short& port, const string& username, const string& password);
 		//ConnectInfo(ConnectInfo&);
 		void Login();
 		void Logout();
@@ -65,7 +72,7 @@ namespace AlertWatchdog {
 		ConnectInfo info;
 		static bool is_init;
 	public:
-		HikvisionClient(const ConnectInfo&);
+		HikvisionClient(const ConnectInfo& c);
 		void Initialize();
 		//void Login();
 		void Cleanup();
