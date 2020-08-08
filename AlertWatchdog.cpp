@@ -8,6 +8,7 @@ bool stand_by = true;
 
 void MessageCallback(LONG lCommand, NET_DVR_ALARMER* pAlarmer, char* pAlarmInfo, DWORD dwBufLen, void* puser) {
 	NET_DVR_ALARMINFO struAlarmInfo;
+	std::cout << "test " << lCommand << "\n";
 #ifdef _MSC_VER
 	memcpy_s(&struAlarmInfo, sizeof(NET_DVR_ALARMINFO), pAlarmInfo, sizeof(NET_DVR_ALARMINFO));
 #else
@@ -54,6 +55,7 @@ AlertWatchdog::ConnectInfo ParseConfigureJson() {
 }
 
 #ifdef _WIN32
+// https://stackoverflow.com/questions/18291284/handle-ctrlc-on-win32
 BOOL WINAPI SignalHandler(DWORD signal) {
 	if (signal == CTRL_C_EVENT)
 		stand_by = false;
@@ -68,8 +70,7 @@ void SignalHandler(int) {
 
 void SetSignalHandle() {
 #ifdef _WIN32
-	if (!SetConsoleCtrlHandler(SignalHandler, TRUE)) {
-	}
+	SetConsoleCtrlHandler(SignalHandler, TRUE);
 #else
 	signal(SIGINT, signal_handle);
 #endif
@@ -94,7 +95,7 @@ int main() {
 	//std::cout.flush();
 #endif
 	while (stand_by) {
-		Sleep(1000);
+		Sleep(500);
 	}
 #ifndef NDEBUG
 	std::cout << "Cleanup hikvision client\n";

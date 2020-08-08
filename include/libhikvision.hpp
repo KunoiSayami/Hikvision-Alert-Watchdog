@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <exception>
-#include <HCNetSDK.h>
+#include <hikvision/HCNetSDK.h>
 
 namespace AlertWatchdog {
 	enum KEY_LOCATE {
