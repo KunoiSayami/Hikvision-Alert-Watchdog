@@ -2,6 +2,9 @@
 #include <fstream>
 #include <sstream>
 #include <nlohmann/json.hpp>
+#include <signal.h>
+
+bool stand_by = true;
 
 void MessageCallback(LONG lCommand, NET_DVR_ALARMER* pAlarmer, char* pAlarmInfo, DWORD dwBufLen, void* puser) {
 	NET_DVR_ALARMINFO struAlarmInfo;
@@ -50,26 +53,59 @@ AlertWatchdog::ConnectInfo ParseConfigureJson() {
 		config[PREDEFINED_CONFIGURE_KEYS[KEY_LOCATE::PASSWORD]]);
 }
 
+#ifdef _WIN32
+BOOL WINAPI SignalHandler(DWORD signal) {
+	if (signal == CTRL_C_EVENT)
+		stand_by = false;
+
+	return TRUE;
+}
+#else
+void SignalHandler(int) {
+	stand_by = false;
+}
+#endif
+
+void SetSignalHandle() {
+#ifdef _WIN32
+	if (!SetConsoleCtrlHandler(SignalHandler, TRUE)) {
+	}
+#else
+	signal(SIGINT, signal_handle);
+#endif
+}
+
 int main() {
+	SetSignalHandle();
 #ifndef NDEBUG
 	std::cout << "Initialize hikvision client\n";
 #endif
 	AlertWatchdog::HikvisionClient hikvisionClient(ParseConfigureJson());
 	hikvisionClient.Initialize();
-	hikvisionClient.Login();
+	try {
+		hikvisionClient.Login();
+	} catch (AlertWatchdog::LoginException e) {
+		std::cerr << "Login failure (" << NET_DVR_GetLastError() << ")\n";;
+	}
 	hikvisionClient.SetCallbackFunction(MessageCallback);
 	hikvisionClient.SetupAlarmChan();
 #ifndef NDEBUG
-	std::cout << "Press enter to exit client";
-	std::cout.flush();
+	std::cout << "Press Control-C to exit client\n";
+	//std::cout.flush();
 #endif
-	std::cin.clear();
-	std::cin.get();
+	while (stand_by) {
+		Sleep(1000);
+	}
 #ifndef NDEBUG
 	std::cout << "Cleanup hikvision client\n";
 #endif
 	hikvisionClient.CloseAlarmChan();
-	hikvisionClient.Logout();
+	try {
+		hikvisionClient.Logout();
+	}
+	catch (AlertWatchdog::LogoutException e) {
+		std::cerr << "Logout failure (" << NET_DVR_GetLastError() << ")\n";;
+	}
 	hikvisionClient.Cleanup();
 	return 0;
 }

@@ -83,11 +83,7 @@ namespace AlertWatchdog {
 	void ConnectInfo::Login() {
 		this->user_id = NET_DVR_Login_V40(&this->user_info, &this->device_info);
 		if (this->user_id < 0)
-#ifndef NDEBUG
-			std::cerr << "Login failure (" << NET_DVR_GetLastError() << ")\n";;
-#else
 			throw OtherLoginException();
-#endif
 		this->is_connect = true;
 	}
 
