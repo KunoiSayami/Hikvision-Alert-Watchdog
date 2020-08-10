@@ -6,6 +6,7 @@
 //#include <chrono>
 #include <ctime>
 #include <nlohmann/json.hpp>
+#include <exception>
 
 namespace AlertWatchdog {
 	using std::string;
@@ -23,6 +24,15 @@ namespace AlertWatchdog {
 		const static unsigned long version = 0x1;
 	public:
 		PostData(unsigned long type, string message);
+		bool Post(UploadConfigure &) const;
+	};
+
+	class UploadException : std::exception {};
+	class UploadErrorException : UploadException {
+		string error_msg;
+	public:
+		UploadErrorException(CURLcode &);
+		string GetMsg() const;
 	};
 
 	class UploadConfigure {
@@ -30,5 +40,6 @@ namespace AlertWatchdog {
 		string remote_url;
 	public:
 		UploadConfigure(string);
+		string GetUrl() const;
 	};
 }
