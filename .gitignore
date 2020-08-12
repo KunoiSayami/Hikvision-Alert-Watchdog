@@ -380,3 +380,6 @@ lib/
 *.sln
 *.dir/
 config.json
+include/curl/
+include/hikvision/
+include/nlohmann

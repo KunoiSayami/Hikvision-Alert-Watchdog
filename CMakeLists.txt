@@ -6,6 +6,8 @@ include_directories(include)
 add_executable (AlertWatchdog "AlertWatchdog.cpp" "AlertWatchdog.h" "upload.cpp" "libhikvision.cpp")
 
 ADD_LIBRARY(libcurl STATIC IMPORTED)
+#add_compile_definitions(CURL_STATICLIB)
+#add_definitions(-DCURL_STATICLIB)
 
 IF (CMAKE_SYSTEM_NAME MATCHES "Linux")         
     MESSAGE ( STATUS "current platform: Linux")

@@ -4,6 +4,7 @@
 #include <nlohmann/json.hpp>
 #include <signal.h>
 
+
 bool stand_by = true;
 
 void MessageCallback(LONG lCommand, NET_DVR_ALARMER* pAlarmer, char* pAlarmInfo, DWORD dwBufLen, void* puser) {

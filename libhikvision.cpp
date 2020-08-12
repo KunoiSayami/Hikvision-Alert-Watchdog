@@ -29,10 +29,6 @@ namespace AlertWatchdog {
 		this->user_info.bUseAsynLogin = false;
 	}
 
-	bool ConnectInfo::IsConnected() const {
-		return this->is_connect;
-	}
-
 	bool HikvisionClient::is_init = false;
 
 	HikvisionClient::HikvisionClient(const ConnectInfo& c) : info(c) {
@@ -72,9 +68,6 @@ namespace AlertWatchdog {
 	void HikvisionClient::Logout() {
 		this->info.Logout();
 	}
-	bool HikvisionClient::Initialized() const {
-		return is_init;
-	}
 
 	void HikvisionClient::SetCallbackFunction(MSGCallBack callback) {
 		NET_DVR_SetDVRMessageCallBack_V30(callback, nullptr);
@@ -92,10 +85,6 @@ namespace AlertWatchdog {
 			throw NotLoginException();
 		NET_DVR_Logout(this->user_id);
 		this->is_connect = false;
-	}
-
-	long ConnectInfo::GetUserId() const {
-		return this->user_id;
 	}
 
 	void HikvisionClient::SetupAlarmChan() {
@@ -137,7 +126,4 @@ namespace AlertWatchdog {
 		return true;
 	}
 
-	bool ArmInfo::GetStatus() const {
-		return this->is_setup;
-	}
 }

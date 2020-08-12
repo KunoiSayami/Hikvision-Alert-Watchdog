@@ -4,10 +4,6 @@
 namespace AlertWatchdog {
 	UploadConfigure::UploadConfigure(string url) : remote_url(url) {}
 
-	string UploadConfigure::GetUrl() const {
-		return this->remote_url;
-	}
-
 	Data::Data(): timestamp(time(nullptr)), data("{}") {
 		//auto obj = std::chrono::system_clock::now();
 	}
@@ -39,13 +35,5 @@ namespace AlertWatchdog {
 			curl_easy_cleanup(curl);
 		}
 		return true;
-	}
-
-	UploadErrorException::UploadErrorException(CURLcode & res) : UploadException() {
-		error_msg = string(curl_easy_strerror(res));
-	}
-
-	string UploadErrorException::GetMsg() const {
-		return this->error_msg;
 	}
 }

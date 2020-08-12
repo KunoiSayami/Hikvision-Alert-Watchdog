@@ -2,8 +2,8 @@
 
 ## Build
 
-* Download [Hikvision SDK](https://open.hikvision.com/download/5cda567cf47ae80dd41a54b3)
-* Also, we need [curl](https://curl.haxx.se/download.html) **static** library
+* Download [Hikvision SDK](https://open.hikvision.com/download/5cda567cf47ae80dd41a54b3) and [nlohmann json header file](https://github.com/nlohmann/json)
+* Also, we need [curl](https://curl.haxx.se/download.html) **static** library and header library
 * Put library file to `lib/`
 * Build with cmake
 
@@ -18,6 +18,13 @@ cmake --build .
 * Edit `config.json`
 * Copy runtime library to program working directory
 * Run program
+
+## SDK version
+SDK name | Version
+------------|----------
+Hikvision | V6.1.4.42_build20200527
+curl | 7.71.1
+nlohmann json | 3.9.1
 
 ## LICENSE
 

@@ -46,8 +46,12 @@ namespace AlertWatchdog {
 		void Login();
 		void Logout();
 		void InitializeUserInfo();
-		bool IsConnected() const;
-		long GetUserId() const;
+		bool IsConnected() const {
+			return this->is_connect;
+		}
+		long GetUserId() const {
+			return this->user_id;
+		}
 	};
 
 	class ArmInfo {
@@ -58,7 +62,9 @@ namespace AlertWatchdog {
 		ArmInfo();
 		void SetupAlarmChan(LONG userId); // ref: NET_DVR_SetupAlarmChan_V41
 		bool CloseAlarmChan();
-		bool GetStatus() const;
+		bool GetStatus() const {
+			return this->is_setup;
+		}
 	};
 
 	class HikvisionClient {
@@ -67,7 +73,7 @@ namespace AlertWatchdog {
 		static bool is_init;
 		ArmInfo arminfo;
 	public:
-		HikvisionClient(const ConnectInfo& c);
+		HikvisionClient(const ConnectInfo&);
 		void Initialize();
 		void Login();
 		void Logout();
@@ -75,7 +81,9 @@ namespace AlertWatchdog {
 		void SetupAlarmChan();
 		void CloseAlarmChan();
 		void Cleanup();
-		bool Initialized() const;
+		bool Initialized() const {
+			return this->is_init;
+		}
 	};
 
 }
